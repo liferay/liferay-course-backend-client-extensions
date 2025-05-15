@@ -1,4 +1,4 @@
-package com.liferay.clarity;
+package com.clarityvisionsolutions.distributor.mgmt.actions;
 
 import com.liferay.petra.string.StringBundler;
 
