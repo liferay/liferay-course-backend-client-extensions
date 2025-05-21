@@ -1,4 +1,4 @@
-package com.liferay.clarity;
+package com.clarityvisionsolutions.distributor.mgmt.actions;
 
 import org.springframework.security.oauth2.jwt.Jwt;
 
