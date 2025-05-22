@@ -1,4 +1,4 @@
-package com.liferay.clarity;
+package com.clarityvisionsolutions.distributor.mgmt.actions;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,7 +18,8 @@ public class AccountCreationRequestQueueManager {
 	/**
 	 * Waits for work to be available.
 	 *
-	 * @throws InterruptedException if the thread is interrupted while waiting for work
+	 * @throws InterruptedException if the thread is interrupted while waiting for
+	 *                              work
 	 */
 	public void awaitWork() throws InterruptedException {
 		_lock.lock();
@@ -27,8 +28,7 @@ public class AccountCreationRequestQueueManager {
 			while (isEmpty()) {
 				_notEmpty.await(); // Wait until notified
 			}
-		}
-		finally {
+		} finally {
 			_lock.unlock();
 		}
 	}
@@ -37,7 +37,8 @@ public class AccountCreationRequestQueueManager {
 	 * Dequeues an account creation request.
 	 *
 	 * @return the account creation request
-	 * @throws InterruptedException if the thread is interrupted while waiting for an account creation request
+	 * @throws InterruptedException if the thread is interrupted while waiting for
+	 *                              an account creation request
 	 */
 	public AccountCreationRequest dequeue() throws InterruptedException {
 
@@ -79,15 +80,13 @@ public class AccountCreationRequestQueueManager {
 
 		try {
 			_notEmpty.signal(); // Notify the executor that work is available
-		}
-		finally {
+		} finally {
 			_lock.unlock();
 		}
 	}
 
 	private final ReentrantLock _lock = new ReentrantLock();
 	private final Condition _notEmpty = _lock.newCondition();
-	private final BlockingQueue<AccountCreationRequest> _queue =
-		new LinkedBlockingQueue<>();
+	private final BlockingQueue<AccountCreationRequest> _queue = new LinkedBlockingQueue<>();
 
 }

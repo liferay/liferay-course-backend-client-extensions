@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.clarity;
+package com.clarityvisionsolutions.distributor.mgmt.actions;
 
 import java.util.Map;
 
@@ -44,8 +44,7 @@ public abstract class BaseRestController {
 				JSONObject jsonObject = new JSONObject(json);
 
 				log.info("JSON: " + jsonObject.toString(4));
-			}
-			catch (Exception exception) {
+			} catch (Exception exception) {
 				log.error("JSON: " + json, exception);
 			}
 

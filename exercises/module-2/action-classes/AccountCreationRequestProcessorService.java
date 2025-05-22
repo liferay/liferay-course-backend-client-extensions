@@ -1,4 +1,4 @@
-package com.liferay.clarity;
+package com.clarityvisionsolutions.distributor.mgmt.actions;
 
 import com.liferay.petra.string.StringBundler;
 
@@ -35,8 +35,8 @@ public class AccountCreationRequestProcessorService {
 	 */
 	@Autowired
 	public AccountCreationRequestProcessorService(
-		AccountCreationRequestQueueManager queueManager,
-		TaskExecutor taskExecutor) {
+			AccountCreationRequestQueueManager queueManager,
+			TaskExecutor taskExecutor) {
 
 		_queueManager = queueManager;
 		_taskExecutor = taskExecutor;
@@ -65,123 +65,102 @@ public class AccountCreationRequestProcessorService {
 		try {
 			JSONObject jsonObject = new JSONObject(request.getAccountJSON());
 
-			JSONObject objectEntryDTODistributorApplicationJSONObject =
-				jsonObject.getJSONObject(
+			JSONObject objectEntryDTODistributorApplicationJSONObject = jsonObject.getJSONObject(
 					"objectEntryDTODistributorApplication");
 
-			JSONObject propertiesJSONObject =
-				objectEntryDTODistributorApplicationJSONObject.getJSONObject(
+			JSONObject propertiesJSONObject = objectEntryDTODistributorApplicationJSONObject.getJSONObject(
 					"properties");
 
 			String accountEmailAddress = propertiesJSONObject.getString(
-				"applicantEmailAddress");
+					"applicantEmailAddress");
 
 			String accountName = propertiesJSONObject.getString("businessName");
 
 			String accountExternalReferenceCode = "ACCOUNT_".concat(
-				accountName.toUpperCase(
-				).replace(
-					' ', '_'
-				));
+					accountName.toUpperCase().replace(
+							' ', '_'));
 
-			String tokenValue = request.getJwt(
-			).getTokenValue();
+			String tokenValue = request.getJwt().getTokenValue();
 
 			String authHeader = "Bearer " + tokenValue;
 
 			WebClient.Builder builder = WebClient.builder();
 
 			WebClient webClient = builder.baseUrl(
-				lxcDXPServerProtocol + "://" + lxcDXPMainDomain
-			).defaultHeader(
-				HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE
-			).defaultHeader(
-				HttpHeaders.AUTHORIZATION, authHeader
-			).defaultHeader(
-				HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE
-			).build();
+					lxcDXPServerProtocol + "://" + lxcDXPMainDomain).defaultHeader(
+							HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+					.defaultHeader(
+							HttpHeaders.AUTHORIZATION, authHeader)
+					.defaultHeader(
+							HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+					.build();
 
-			webClient.post(
-			).uri(
-				"o/headless-admin-user/v1.0/accounts"
-			).bodyValue(
-				StringBundler.concat(
-					"{\"externalReferenceCode\": \"",
-					accountExternalReferenceCode, "\", \"name\": \"",
-					accountName, "\", \"type\": \"business\"}")
-			).retrieve(
-			).toEntity(
-				String.class
-			).flatMap(
-				responseEntity -> _transform(responseEntity)
-			).doOnSuccess(
-				responseEntity -> _log(
-					"Created account: " + responseEntity.getBody())
-			).then(
-				webClient.post(
-				).uri(
-					StringBundler.concat(
-						"o/headless-admin-user/v1.0/accounts",
-						"/by-external-reference-code/",
-						accountExternalReferenceCode,
-						"/user-accounts/by-email-address/", accountEmailAddress)
-				).retrieve(
-				).toEntity(
-					String.class
-				).flatMap(
-					responseEntity -> _transform(responseEntity)
-				)
-			).doOnSuccess(
-				responseEntity -> _log(
-					"Assigned user: " + responseEntity.getBody())
-			).then(
-				webClient.get(
-				).uri(
-					uriBuilder -> uriBuilder.path(
-						StringBundler.concat(
-							"o/headless-admin-user/v1.0/accounts",
-							"/by-external-reference-code/",
-							accountExternalReferenceCode, "/account-roles")
-					).queryParam(
-						"filter", "name eq 'Account Administrator'"
-					).build()
-				).retrieve(
-				).bodyToMono(
-					String.class
-				).map(
-					pageJSON -> new JSONObject(
-						pageJSON
-					).getJSONArray(
-						"items"
-					).getJSONObject(
-						0
-					).getInt(
-						"id"
-					)
-				)
-			).flatMap(
-				accountRoleId -> webClient.post(
-				).uri(
-					StringBundler.concat(
-						"o/headless-admin-user/v1.0/accounts",
-						"/by-external-reference-code/",
-						accountExternalReferenceCode, "/account-roles/",
-						accountRoleId, "/user-accounts/by-email-address/",
-						accountEmailAddress)
-				).retrieve(
-				).toEntity(
-					String.class
-				).flatMap(
-					responseEntity -> _transform(responseEntity)
-				).doOnSuccess(
-					responseEntity -> _log(
-						"Assigned role: " + responseEntity.getBody())
-				)
-			).subscribe();
-		}
-		catch (Exception exception) {
+			webClient.post().uri(
+					"o/headless-admin-user/v1.0/accounts").bodyValue(
+							StringBundler.concat(
+									"{\"externalReferenceCode\": \"",
+									accountExternalReferenceCode, "\", \"name\": \"",
+									accountName, "\", \"type\": \"business\"}"))
+					.retrieve().toEntity(
+							String.class)
+					.flatMap(
+							responseEntity -> _transform(responseEntity))
+					.doOnSuccess(
+							responseEntity -> _log(
+									"Created account: " + responseEntity.getBody()))
+					.then(
+							webClient.post().uri(
+									StringBundler.concat(
+											"o/headless-admin-user/v1.0/accounts",
+											"/by-external-reference-code/",
+											accountExternalReferenceCode,
+											"/user-accounts/by-email-address/", accountEmailAddress))
+									.retrieve().toEntity(
+											String.class)
+									.flatMap(
+											responseEntity -> _transform(responseEntity)))
+					.doOnSuccess(
+							responseEntity -> _log(
+									"Assigned user: " + responseEntity.getBody()))
+					.then(
+							webClient.get().uri(
+									uriBuilder -> uriBuilder.path(
+											StringBundler.concat(
+													"o/headless-admin-user/v1.0/accounts",
+													"/by-external-reference-code/",
+													accountExternalReferenceCode, "/account-roles"))
+											.queryParam(
+													"filter", "name eq 'Account Administrator'")
+											.build())
+									.retrieve().bodyToMono(
+											String.class)
+									.map(
+											pageJSON -> new JSONObject(
+													pageJSON).getJSONArray(
+															"items")
+													.getJSONObject(
+															0)
+													.getInt(
+															"id")))
+					.flatMap(
+							accountRoleId -> webClient.post().uri(
+									StringBundler.concat(
+											"o/headless-admin-user/v1.0/accounts",
+											"/by-external-reference-code/",
+											accountExternalReferenceCode, "/account-roles/",
+											accountRoleId, "/user-accounts/by-email-address/",
+											accountEmailAddress))
+									.retrieve().toEntity(
+											String.class)
+									.flatMap(
+											responseEntity -> _transform(responseEntity))
+									.doOnSuccess(
+											responseEntity -> _log(
+													"Assigned role: " + responseEntity.getBody())))
+					.subscribe();
+		} catch (Exception exception) {
 			_log.error(
-				"Failed to process account: {}", request.getAccountJSON(), exception);
+					"Failed to process account: {}", request.getAccountJSON(), exception);
 		}
 	}
 
@@ -190,35 +169,31 @@ public class AccountCreationRequestProcessorService {
 	 */
 	private void _startProcessing() {
 		_taskExecutor.execute(
-			() -> {
-				while (true) {
-					try {
-						_queueManager.awaitWork(); // Wait for work if the queue is empty
+				() -> {
+					while (true) {
+						try {
+							_queueManager.awaitWork(); // Wait for work if the queue is empty
 
-						while (!_queueManager.isEmpty()) {
-							AccountCreationRequest request =
-								_queueManager.dequeue();
+							while (!_queueManager.isEmpty()) {
+								AccountCreationRequest request = _queueManager.dequeue();
 
-							_processRequest(request);
+								_processRequest(request);
+							}
+						} catch (InterruptedException interruptedException) {
+							Thread.currentThread().interrupt();
+
+							_log.error(
+									"Queue processing interrupted",
+									interruptedException);
+						} catch (Exception exception) {
+							_log.error("Error processing queue entry", exception);
 						}
 					}
-					catch (InterruptedException interruptedException) {
-						Thread.currentThread(
-						).interrupt();
-
-						_log.error(
-							"Queue processing interrupted",
-							interruptedException);
-					}
-					catch (Exception exception) {
-						_log.error("Error processing queue entry", exception);
-					}
-				}
-			});
+				});
 	}
 
 	private Mono<ResponseEntity<String>> _transform(
-		ResponseEntity<String> responseEntity) {
+			ResponseEntity<String> responseEntity) {
 
 		HttpStatus httpStatus = responseEntity.getStatusCode();
 
@@ -230,7 +205,7 @@ public class AccountCreationRequestProcessorService {
 	}
 
 	private static final Logger _log = LoggerFactory.getLogger(
-		AccountCreationRequestProcessorService.class);
+			AccountCreationRequestProcessorService.class);
 
 	private final AccountCreationRequestQueueManager _queueManager;
 	private final TaskExecutor _taskExecutor;
