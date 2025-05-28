@@ -44,8 +44,7 @@ public abstract class BaseRestController {
 				JSONObject jsonObject = new JSONObject(json);
 
 				log.info("JSON: " + jsonObject.toString(4));
-			}
-			catch (Exception exception) {
+			} catch (Exception exception) {
 				log.error("JSON: " + json, exception);
 			}
 
