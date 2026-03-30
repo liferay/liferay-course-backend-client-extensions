@@ -1,4 +1,14 @@
 {
+	"configuration": {
+		"className": "com.liferay.object.admin.rest.dto.v1_0.ObjectDefinition",
+		"parameters": {
+			"containsHeaders": "true",
+			"createStrategy": "UPSERT",
+			"onErrorFail": "ON_ERROR_FAIL",
+			"updateStrategy": "UPDATE"
+		},
+		"taskItemDelegateName": "DEFAULT"
+	},
 	"items": [
 		{
 			"active": true,
@@ -7,6 +17,7 @@
 			"enableIndexSearch": true,
 			"enableObjectEntryDraft": true,
 			"externalReferenceCode": "D4B8_DISTRIBUTOR_APPLICATION",
+			"objectFolderExternalReferenceCode": "D4B8_DISTRIBUTOR_MANAGEMENT",
 			"label": {
 				"en_US": "Distributor Application"
 			},
@@ -175,19 +186,11 @@
 						},
 						{
 							"name": "fileSource",
-							"value": "userComputer"
-						},
+							"value": "userComputerToDocumentsAndMedia"
+						},						
 						{
 							"name": "maximumFileSize",
 							"value": 100
-						},
-						{
-							"name": "showFilesInDocumentsAndMedia",
-							"value": true
-						},
-						{
-							"name": "storageDLFolderPath",
-							"value": "/DistributorApplication"
 						}
 					],
 					"readOnly": "false",
@@ -311,7 +314,7 @@
 					"type": "String"
 				}
 			],
-			"objectFolderExternalReferenceCode": "default",
+			"objectFolderExternalReferenceCode": "D4B8_DISTRIBUTOR_MANAGEMENT",
 			"objectLayouts": [
 				{
 					"defaultObjectLayout": true,
@@ -630,14 +633,14 @@
 						},
 						{
 							"name": "fileSource",
-							"value": "userComputer"
+							"value": "userComputerToDocumentsAndMedia"
 						},
 						{
 							"name": "maximumFileSize",
 							"value": 100
 						},
 						{
-							"name": "showFilesInDocumentsAndMedia",
+							"name": "showFilesInLibrary",
 							"value": false
 						}
 					],
@@ -714,7 +717,7 @@
 					"type": "String"
 				}
 			],
-			"objectFolderExternalReferenceCode": "default",
+			"objectFolderExternalReferenceCode": "D4B8_DISTRIBUTOR_MANAGEMENT",
 			"panelCategoryKey": "applications_menu.applications.content",
 			"pluralLabel": {
 				"en_US": "Application Evaluations"
